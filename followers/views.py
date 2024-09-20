@@ -1,6 +1,6 @@
 
 from rest_framework import generics, permissions
-from pythonista_api.permissions import IsOwnerOrReadOnly
+from afghanistan_api.permissions import IsOwnerOrReadOnly
 from .models import Follower
 from .serializers import FollowerSerializer
 

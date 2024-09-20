@@ -57,13 +57,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cloudinary',
     'rest_framework',
-
+    'followers',
     'profiles',
     'posts',
     'comments',
     'likes',
-    'followers',
-
+    
 ]
 
 MIDDLEWARE = [
