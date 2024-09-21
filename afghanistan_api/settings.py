@@ -30,8 +30,16 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication'
         if 'DEV' in os.environ
         else 'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-    )]
+    )],
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 4,
+    'DATETIME_FORMAT': '%d %b %Y',
 }
+if 'DEV' not in os.environ:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
+        'rest_framework.renderers.JSONRenderer',
+    ]
 
 REST_USE_JWT = True
 JWT_AUTH_SECURE = True
@@ -76,19 +84,19 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework.authtoken',
     'dj_rest_auth',
-    'django.contrib.sites',
+    'django.contrib.sites',  # Required for allauth
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
+    'allauth.socialaccount',  # Optional, if using social authentication
     'dj_rest_auth.registration',
-    
     'followers',
     'profiles',
     'posts',
     'comments',
     'likes',
-    
 ]
+
+
 SITE_ID = 1
 
 MIDDLEWARE = [
@@ -99,7 +107,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # Add this line
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',  # Required if using sites framework
+    # 'allauth.account.middleware.AccountMiddleware',  # Required for allauth
 ]
 
 ROOT_URLCONF = 'afghanistan_api.urls'
