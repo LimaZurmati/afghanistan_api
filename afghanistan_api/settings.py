@@ -59,14 +59,14 @@ SECRET_KEY = 'django-insecure-4@866993s2sufqaxehyh3k&94q#)c#3do(l$8f8fx+0ubaoj5y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8000-limazurmati-afghanistan-6c5o2u24jat.ws.codeinstitute-ide.net',
+ALLOWED_HOSTS = ['8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',
     'localhost',
     '127.0.0.1',]
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
-    'https://8000-limazurmati-afghanistan-6c5o2u24jat.ws.codeinstitute-ide.net',
-    'http://localhost:8000',  # For local testing
+    'https://8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',
+    'http://localhost:8000',
 ] 
 
 # Application definition
