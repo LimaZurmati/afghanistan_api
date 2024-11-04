@@ -1,23 +1,27 @@
-
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import generics, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from afghanistan_api.permissions import IsOwnerOrReadOnly
 from .models import Post
 from .serializers import PostSerializer
 
-
 class PostList(generics.ListCreateAPIView):
     """
-    List posts or create a post if logged in
-    The perform_create method associates the post with the logged in user.
+    List posts or create a post if logged in.
+    The perform_create method associates the post with the logged-in user.
     """
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = Post.objects.annotate(
-        likes_count=Count('likes', distinct=True),
-        comments_count=Count('comments', distinct=True)
-    ).order_by('-created_at')
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.annotate(
+            likes_count=Count('likes', distinct=True),
+            comments_count=Count('comments', distinct=True)
+        ).filter(
+            Q(is_public=True) | Q(owner=user)  # Use Q objects for OR queries
+        ).order_by('-created_at')
+
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
@@ -49,7 +53,9 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = PostSerializer
     permission_classes = [IsOwnerOrReadOnly]
-    queryset = Post.objects.annotate(
-        likes_count=Count('likes', distinct=True),
-        comments_count=Count('comments', distinct=True)
-    ).order_by('-created_at')
+
+    def get_queryset(self):
+        return Post.objects.annotate(
+            likes_count=Count('likes', distinct=True),
+            comments_count=Count('comments', distinct=True)
+        ).order_by('-created_at')
