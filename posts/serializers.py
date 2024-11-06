@@ -14,7 +14,24 @@ class PostSerializer(serializers.ModelSerializer):
     comments_count = serializers.ReadOnlyField()
     is_public = serializers.BooleanField(default=True)  # Include is_public
 
-   
+    def validate_image(self, value):
+        if value.size > 2 * 1024 * 1024:
+            raise serializers.ValidationError('Image size larger than 2MB!')
+        if value.image.height > 4096:
+            raise serializers.ValidationError(
+                'Image height larger than 4096px!'
+            )
+        if value.image.width > 4096:
+            raise serializers.ValidationError(
+                'Image width larger than 4096px!'
+            )
+        return value
+    # Validate video uploads
+    def validate_video(self, value):
+        if value.size > 10 * 1024 * 1024:  # Limit to 10MB
+            raise serializers.ValidationError('Video size larger than 10MB!')
+        return value
+
     def get_is_owner(self, obj):
         request = self.context['request']
         return request.user == obj.owner
