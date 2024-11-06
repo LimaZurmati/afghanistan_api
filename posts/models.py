@@ -21,6 +21,7 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     image = models.ImageField(upload_to='images/', default='../default_profile_te45n4', blank=True)
+    video = models.FileField(upload_to='videos/', null=True, blank=True)  # New video field
     image_filter = models.CharField(max_length=32, choices=image_filter_choices, default='normal')
     is_public = models.BooleanField(default=True)  # Default to public
 

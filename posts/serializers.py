@@ -21,6 +21,11 @@ class PostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Image width larger than 4096px!')
         return value
 
+    def validate_video(self, value):
+        if value.size > 10 * 1024 * 1024:  # Example limit of 10MB for video
+            raise serializers.ValidationError('Video size larger than 10MB!')
+        return value
+
     def get_is_owner(self, obj):
         request = self.context['request']
         return request.user == obj.owner
@@ -37,6 +42,7 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'owner', 'is_owner', 'profile_id',
             'profile_image', 'created_at', 'updated_at',
-            'title', 'content', 'image', 'image_filter',
-            'like_id', 'likes_count', 'comments_count', 'is_public',
+            'title', 'content', 'image', 'video',  # Added video field
+            'image_filter', 'like_id', 'likes_count',
+            'comments_count', 'is_public',
         ]
