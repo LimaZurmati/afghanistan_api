@@ -32,7 +32,7 @@ REST_FRAMEWORK = {
         if 'DEV' in os.environ
         else 'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     )],
-    
+
     'DEFAULT_PAGINATION_CLASS':
     'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 4,
@@ -60,7 +60,8 @@ REST_AUTH_SERIALIZERS = {
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'DEV' in os.environ
+# DEBUG = 'DEV' in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',os.environ.get('ALLOWED_HOST'), 'afghanistan-api-ba73e497f12e.herokuapp.com']
 
