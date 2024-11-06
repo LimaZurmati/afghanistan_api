@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from posts.models import Post
 from likes.models import Like
+from PIL import Image as PilImage
+import io
 
 class PostSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -16,10 +18,16 @@ class PostSerializer(serializers.ModelSerializer):
     def validate_image(self, value):
         if value.size > 2 * 1024 * 1024:  # Limit to 2MB
             raise serializers.ValidationError('Image size larger than 2MB!')
-        if value.height > 4096:  # Limit height
+        
+        # Open the image using Pillow to get dimensions
+        image = PilImage.open(value)
+        width, height = image.size
+        
+        if height > 4096:  # Limit height
             raise serializers.ValidationError('Image height larger than 4096px!')
-        if value.width > 4096:  # Limit width
+        if width > 4096:  # Limit width
             raise serializers.ValidationError('Image width larger than 4096px!')
+        
         return value
 
     # Validate video uploads
