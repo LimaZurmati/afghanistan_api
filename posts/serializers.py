@@ -26,11 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
                 'Image width larger than 4096px!'
             )
         return value
-    # Validate video uploads
-    def validate_video(self, value):
-        if value.size > 10 * 1024 * 1024:  # Limit to 10MB
-            raise serializers.ValidationError('Video size larger than 10MB!')
-        return value
+
 
     def get_is_owner(self, obj):
         request = self.context['request']
