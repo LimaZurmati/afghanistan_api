@@ -27,6 +27,42 @@ class PostSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_video(self, value):
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            if value is None:
+                return
+            if not value.name.lower().endswith(('.mp4', '.avi', '.mov')):
+                raise serializer.ValidationError("Only MP4,AVI, and MOV vedio files are allowed.")
+            elif value.size > 50 * 1044 * 1024:
+                raise serializer.ValidationError("Video size larger than 50MB!")  
+        else:
+            if value is None:
+                return self.instance.video
+            if not value.name.lower().endswith(('.mp4','avi','.mov')):
+                raise serializer.ValidationError("Only MP4, AVI, and MOV video files are allowed.")
+            elif value.size > 50 * 1024 * 1024:
+                raise serializer.ValidationError('Video size is largaer than 50MB')
+        return value     
+
+
+    def validate(self, data): 
+        print("data is validate method", data)
+        # check if 'video' field is present in the data and has changed 
+        # added not to trigger validate method since uploaded file was validated on Post
+        # request and no need validating if instance is not chnaging
+        if 'video' in data and self.instance and self.instance.video != data['video']:
+            video = data.get(video)
+            #Validate video filed
+            self.validate_video(video)
+
+        # Check if 'image' field is present in the data
+        if 'image' in data:
+            image = data.get('image')
+            self.validate_image(image)
+
+        return data                                    
+
 
     def get_is_owner(self, obj):
         request = self.context['request']

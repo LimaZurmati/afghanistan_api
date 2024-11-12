@@ -46,30 +46,8 @@ class PostList(generics.ListCreateAPIView):
     ]
 
     def perform_create(self, serializer):
-        request = self.request
-        
-        # Initialize placeholder for media URLs
-        image_url = None
-        video_url = None
+        serializer.save(owner=self.request.user)
 
-        # Check if there's an image file in the request
-        if 'image' in request.FILES:
-            image_file = request.FILES['image']
-            # Upload the image to Cloudinary
-            cloudinary_response = cloudinary.uploader.upload(image_file, resource_type='image')
-            image_url = cloudinary_response.get('secure_url', None)
-            print("Image uploaded successfully:", image_url)
-
-        # Check if there's a video file in the request
-        if 'video' in request.FILES:
-            video_file = request.FILES['video']
-            # Upload the video to Cloudinary
-            cloudinary_response = cloudinary.uploader.upload(video_file, resource_type='video')
-            video_url = cloudinary_response.get('secure_url', None)
-            print("Video uploaded successfully:", video_url)
-
-        # Save the post with the media URLs
-        serializer.save(owner=request.user, image=image_url, video=video_url)
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
