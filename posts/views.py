@@ -1,44 +1,40 @@
-from django.db.models import Count, Q
 from rest_framework import generics, permissions, filters
-from django_filters.rest_framework import DjangoFilterBackend
 from afghanistan_api.permissions import IsOwnerOrReadOnly
-from .models import Post
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import PostSerializer
-import cloudinary
-import cloudinary.uploader
+from django.db.models import Count
+from .models import Post
+
 
 class PostList(generics.ListCreateAPIView):
     """
-    List posts or create a post if logged in.
-    The perform_create method associates the post with the logged-in user.
+    List posts or create a post if logged in
     """
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Post.objects.annotate(
-            likes_count=Count('likes', distinct=True),
-            comments_count=Count('comments', distinct=True)
-        ).filter(
-            Q(is_public=True) | Q(owner=user)  # Use Q objects for OR queries
-        ).order_by('-created_at')
+    queryset = Post.objects.annotate(
+        likes_count=Count('likes', distinct=True),
+        comments_count=Count('comments', distinct=True)
+    ).order_by('-created_at')
 
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
-        DjangoFilterBackend,
+        DjangoFilterBackend
     ]
-    filterset_fields = [
-        'owner__followed__owner__profile',
-        'likes__owner__profile',
-        'owner__profile',
-    ]
-
+    # for SearchFilter
     search_fields = [
         'owner__username',
-        'title',
+        'content'
     ]
+    # for DjangoFilterBackend
+    filterset_fields = [
+        # filter posts from followers
+        'owner__followed__owner__profile',
+        # filter user posts
+        'owner__profile'
+    ]
+    # for OrderingFilter
     ordering_fields = [
         'likes_count',
         'comments_count',
@@ -55,9 +51,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = PostSerializer
     permission_classes = [IsOwnerOrReadOnly]
-
-    def get_queryset(self):
-        return Post.objects.annotate(
-            likes_count=Count('likes', distinct=True),
-            comments_count=Count('comments', distinct=True)
-        ).order_by('-created_at')
+    queryset = Post.objects.annotate(
+        likes_count=Count('likes', distinct=True),
+        comments_count=Count('comments', distinct=True)
+    ).order_by('-created_at')
