@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 
+
 class Post(models.Model):
     """
     Post model, related to 'owner', i.e. a User instance.
-    """ 
+    """
     image_filter_choices = [
         ('_1977', '1977'), ('brannan', 'Brannan'),
         ('earlybird', 'Earlybird'), ('hudson', 'Hudson'),
@@ -15,14 +16,23 @@ class Post(models.Model):
         ('toaster', 'Toaster'), ('valencia', 'Valencia'),
         ('walden', 'Walden'), ('xpro2', 'X-pro II')
     ]
-    
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
-    image = models.ImageField(upload_to='images/', default='../default_profile_te45n4', blank=True)
-    video = models.FileField(upload_to='videos/', storage=VideoMediaCloudinaryStorage(), null=True, blank=True)  # New video field
+    image = models.ImageField(
+        upload_to='images/',
+        default='../default_profile_te45n4',
+        blank=True
+    )
+    video = models.FileField(
+        upload_to='videos/',
+        storage=VideoMediaCloudinaryStorage(),
+        null=True,
+        blank=True
+    )  # New video field
     image_filter = models.CharField(max_length=32, choices=image_filter_choices, default='normal')
     is_public = models.BooleanField(default=True)  # Default to public
 

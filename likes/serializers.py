@@ -2,17 +2,18 @@ from django.db import IntegrityError
 from rest_framework import serializers
 from likes.models import Like
 
+
 class LikeSerializer(serializers.ModelSerializer):
     """
-     Like Serializer 
+    Like Serializer
     """
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Like
-        fields = ['id', 'owner', 'post','created_at']
+        fields = ['id', 'owner', 'post', 'created_at']
 
-    # check for duplicate like
+    # Check for duplicate like
     def create(self, validated_data):
         try:
             return super().create(validated_data)
@@ -20,6 +21,3 @@ class LikeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'detail': 'possible duplicate'
             })
-
-
- 

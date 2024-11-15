@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from posts.models import Post
 
+
 class Like(models.Model):
     """
-    Like model, related to use post.
+    Like model, related to a post.
     """
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(
@@ -18,5 +19,3 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.owner} {self.post}'
-
-

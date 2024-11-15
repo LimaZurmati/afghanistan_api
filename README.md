@@ -1,131 +1,303 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Afghanspher
 
-Welcome Lima Zurmati,
+## Project goals
+This project provides a Django Rest Framework API for the [Afghansphere React web app](https://github.com/LimaZurmati/afghansphere1). 
 
-This is the Code Institute student template for Gitpod. We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions.
+The Afghansphere project aims to be a vibrant platform that not only showcases Afghanistan's natural beauty and historical significance but also serves as a community-driven space for sharing personal experiences and cultural pride. By engaging both locals and visitors, the project can promote a deeper understanding and appreciation of Afghanistan's unique heritage.
+1) Showcase Afghanistan's Best Places:
+Highlight Scenic and Historical Sites: Feature beautiful landscapes, historical landmarks, and cultural heritage sites, such as the Buddhas of Bamiyan, the Minaret of Jam, and the ancient city of Herat.
+User-Contributed Content: Allow users to submit their recommendations for must-visit places, including detailed descriptions, photos, and personal stories.
+2) Cultural Sharing:
+Experience Sharing: Create a space where Afghan people can share their personal experiences and anecdotes related to specific locations, enhancing cultural understanding and appreciation.
+Vibrant Community Interaction: Foster discussions through comments and forums where users can connect over shared experiences and insights.
 
-You can safely delete this README.md file or change it for your own project. Please do read it at least once, though! It contains some important information about Gitpod and the extensions we use. Some of this information has been updated since the video content was created. The last update to this file was: **June 18, 2024**
+## Table of contents
+- [Afghansphere](#afghanshpere)
+  * [Table of contents](#table-of-contents)
+  * [ Database Designs](#database-design)
+  * [API endpoints](#api-endpoints)
+  * [Frameworks, libraries and dependencies](#frameworks--libraries-and-dependencies)
+    + [django-cloudinary-storage](#django-cloudinary-storage)
+    + [dj-allauth](#dj-allauth)
+    + [dj-rest-auth](#dj-rest-auth)
+    + [djangorestframework-simplejwt](#djangorestframework-simplejwt)
+    + [dj-database-url](#dj-database-url)
+    + [psychopg2](#psychopg2)
+    + [python-dateutil](#python-dateutil)
+    + [django-recurrence](#django-recurrence)
+    + [django-filter](#django-filter)
+    + [django-cors-headers](#django-cors-headers)
+  * [Testing](#testing)
+    + [Manual testing](#manual-testing)
+    + [Automated tests](#automated-tests)
+    + [Python validation](#python-validation)
+    + [Resolved bugs](#resolved-bugs)
+      - [Bugs found while testing the API in isolation](#bugs-found-while-testing-the-api-in-isolation)
+      - [Bugs found while testing the React front-end](#bugs-found-while-testing-the-react-front-end)
+    + [Unresolved bugs](#unresolved-bugs)
+  * [Deployment](#deployment)
+  * [Credits](#credits)
 
-## Gitpod Reminders
 
-To run a frontend (HTML, CSS, Javascript only) application in Gitpod, in the terminal, type:
+### Database Designs
 
-`python3 -m http.server`
+The following Entity Relationship Diagram illustrates the models utilized in the project. The built-in Django User model serves as the foundation, and the following custom models have been developed:
 
-A blue button should appear to click: _Make Public_,
+1. Profiles (a modified version of the standard Django User model)
+2. Posts (for publishing text-based content)
+3. Comments (to allow users to comment on posts and engage with the community)
+4. Likes (to indicate interest in content)
+5.Notifications (to alert users about relevant activities and interactions)
 
-Another blue button should appear to click: _Open Browser_.
+      Note: I was planning to include a notification feature in my app that would allow users to post notifications or receive updates. I created a data model for this, but unfortunately, due to unforeseen issues, I wasn't able to implement this feature. Further clarification can be found at the end of the document.
 
-To run a backend Python file, type `python3 app.py` if your Python file is named `app.py`, of course.
+### _Database Schema_
+The relationships between all of these models is summarized in the followed entity relationship diagram:
+![Database Schema](docs/images/db_schema.jpg)
 
-A blue button should appear to click: _Make Public_,
 
-Another blue button should appear to click: _Open Browser_.
 
-By Default, Gitpod gives you superuser security privileges. Therefore, you do not need to use the `sudo` (superuser do) command in the bash terminal in any of the lessons.
+## API Endpoints
 
-To log into the Heroku toolbelt CLI:
+| **URL**                      | **Notes**                                                                                                                         | **HTTP Method** | **CRUD Operation** | **View Type** | **POST/PUT Data Format**                                                                                                       |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------|-------------------|----------------|-------------------------------------------------------------------------------------------------------------------------------|
+| **Custom User Account Endpoints** |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /accounts/afghansphere       | Handles creation of a new user account with 'tribe' admin permissions, creating a new user profile and a new tribe attached.   | POST             | Create            | List           | {<br>    "username": "string",<br>    "password": "string",<br>    "password2": "string",<br>    "tribename": "string"<br>} |
+| /accounts/user               | Only tribe admins can use this endpoint. Handles creation of a new user account without tribe admin permissions.                   | POST             | Create            | List           | {<br>    "username": "string",<br>    "password": "string",<br>    "password2": "string"<br>}                                 |
+| /accounts/user/{id}         | Handles deletion of the specified user account and profile. Only tribe admins can delete associated users and tribes.              | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
+| **Profiles Endpoints**       |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /profiles/{id}               | Retrieves profile details for the specified user. Only members of the same tribe can access this data.                           | GET              | Read              | Detail         | N/A                                                                                                                           |
+| /profiles/{id}               | Updates existing user profiles. This can only be done by the profile owner or the admin of the user's tribe.                      | PUT              | Update            | Detail         | {<br>    "display_name": "string",<br>    "image": "string",<br>    "is_admin": bool<br>}<br><br>Plus image data            |
+| **Posts Endpoints**          |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /posts                       | Lists all posts made by the authenticated user or all posts in the community.                                                    | GET              | Read              | List           | N/A                                                                                                                           |
+| /posts                       | Creates a new post for the authenticated user.                                                                                   | POST             | Create            | List           | {<br>    "title": "string",<br>    "content": "string"<br>}                                                                    |
+| /posts/{id}                 | Retrieves details of a specific post.                                                                                            | GET              | Read              | Detail         | N/A                                                                                                                           |
+| /posts/{id}                 | Updates an existing post. This can only be done by the post's author.                                                            | PUT              | Update            | Detail         | {<br>    "title": "string",<br>    "content": "string"<br>}                                                                    |
+| /posts/{id}                 | Deletes the specified post. Only the author or an admin can perform this action.                                                | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
+| **Comments Endpoints**       |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /posts/{post_id}/comments    | Lists all comments for a specific post.                                                                                         | GET              | Read              | List           | N/A                                                                                                                           |
+| /posts/{post_id}/comments    | Creates a new comment on a specific post for the authenticated user.                                                             | POST             | Create            | List           | {<br>    "content": "string"<br>}                                                                                             |
+| /comments/{id}               | Retrieves details of a specific comment.                                                                                         | GET              | Read              | Detail         | N/A                                                                                                                           |
+| /comments/{id}               | Updates an existing comment. This can only be done by the comment's author.                                                      | PUT              | Update            | Detail         | {<br>    "content": "string"<br>}                                                                                             |
+| /comments/{id}               | Deletes the specified comment. Only the author can perform this action.                                                           | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
+| **Likes Endpoints**          |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /posts/{post_id}/likes       | Lists all likes for a specific post.                                                                                             | GET              | Read              | List           | N/A                                                                                                                           |
+| /posts/{post_id}/likes       | Allows the authenticated user to like a specific post.                                                                           | POST             | Create            | List           | N/A                                                                                                                           |
+| /posts/{post_id}/likes/{id}  | Allows the authenticated user to unlike a specific post.                                                                         | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
+| **Notification Endpoints**    |                                                                                                                                   |                  |                   |                |                                                                                                                               |
+| /notifications                | Lists all notifications for the authenticated user.                                                                             | GET              | Read              | List           | N/A                                                                                                                           |
+| /notifications/{id}          | Deletes the specified notification. Only the owner of the notification can perform this action.                                   | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
 
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In Gitpod, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
 
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you, so do not share it. If you accidentally make it public, you can create a new one with _Regenerate API Key_.
+## Frameworks, libraries and dependencies
+The TribeHub API is implemented in Python using [Django](https://www.djangoproject.com) and [Django Rest Framework](https://django-filter.readthedocs.io/en/stable/).
 
-### Connecting your Mongo database
+The following additional utilities, apps and modules were also used.
 
-- **Connect to Mongo CLI on a IDE**
-- navigate to your MongoDB Clusters Sandbox
-- click **"Connect"** button
-- select **"Connect with the MongoDB shell"**
-- select **"I have the mongo shell installed"**
-- choose **mongosh (2.0 or later)** for : **"Select your mongo shell version"**
-- choose option: **"Run your connection string in your command line"**
-- in the terminal, paste the copied code `mongo "mongodb+srv://<CLUSTER-NAME>.mongodb.net/<DBname>" --apiVersion 1 --username <USERNAME>`
-  - replace all `<angle-bracket>` keys with your own data
-- enter password _(will not echo **\*\*\*\*** on screen)_
+### django-cloudinary-storage
+https://pypi.org/project/django-cloudinary-storage/
 
-------
+Facilitates the integration of Cloudinary for storing user profile images.
 
-## Release History
+### dj-allauth
+https://django-allauth.readthedocs.io/en/latest/
 
-We continually tweak and adjust this template to help give you the best experience. Here is the version history:
+This package is designed for user authentication. Although it is not currently in use, it allows for registration and authentication through various social media accounts, with the potential for implementation in a future update.
 
-**June 18, 2024,** Add Mongo back into template
+### dj-rest-auth
+https://dj-rest-auth.readthedocs.io/en/latest/introduction.html
 
-**June 14, 2024,** Temporarily remove Mongo until the key issue is resolved
+Offers REST API endpoints for logging in and out. 
 
-**May 28 2024:** Fix Mongo and Links installs
+### djangorestframework-simplejwt
+https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
 
-**April 26 2024:** Update node version to 16
+Provides JSON web token authentication.
 
-**September 20 2023:** Update Python version to 3.9.17.
+### dj-database-url
+https://pypi.org/project/dj-database-url/
 
-**September 1 2021:** Remove `PGHOSTADDR` environment variable.
+Creates an environment variable to configure the connection to the database.
 
-**July 19 2021:** Remove `font_fix` script now that the terminal font issue is fixed.
+### psychopg2
+https://pypi.org/project/psycopg2/
 
-**July 2 2021:** Remove extensions that are not available in Open VSX.
+Database adapater to enable interaction between Python and the PostgreSQL database.
 
-**June 30 2021:** Combined the P4 and P5 templates into one file, added the uptime script. See the FAQ at the end of this file.
+### python-dateutil
+https://pypi.org/project/python-dateutil/
 
-**June 10 2021:** Added: `font_fix` script and alias to fix the Terminal font issue
+This module provides extensions to the standard Python datetime module. It is a pre-requisite for django-recurrence library.
+ 
+### django-filter
+https://django-filter.readthedocs.io/en/stable/
 
-**May 10 2021:** Added `heroku_config` script to allow Heroku API key to be stored as an environment variable.
 
-**April 7 2021:** Upgraded the template for VS Code instead of Theia.
+### django-cors-headers
+https://pypi.org/project/django-cors-headers/
 
-**October 21 2020:** Versions of the HTMLHint, Prettier, Bootstrap4 CDN and Auto Close extensions updated. The Python extension needs to stay the same version for now.
+This Django app adds Cross-Origin-Resource Sharing (CORS) headers to responses, to enable the API to respond to requests from origins other than its own host.
 
-**October 08 2020:** Additional large Gitpod files (`core.mongo*` and `core.python*`) are now hidden in the Explorer, and have been added to the `.gitignore` by default.
 
-**September 22 2020:** Gitpod occasionally creates large `core.Microsoft` files. These are now hidden in the Explorer. A `.gitignore` file has been created to make sure these files will not be committed, along with other common files.
+### PostgreSQL: PostgreSQL was used as the object-relational database system.
 
-**April 16 2020:** The template now automatically installs MySQL instead of relying on the Gitpod MySQL image. The message about a Python linter not being installed has been dealt with, and the set-up files are now hidden in the Gitpod file explorer.
+### ElephantSQL: ElephantSQL was used to host the database.
+### Cloudinary: A service that hosts image files in the project.
 
-**April 13 2020:** Added the _Prettier_ code beautifier extension instead of the code formatter built-in to Gitpod.
+### Git: Git was used for version control by utilizing the Gitpod terminal to commit to Git and Push to GitHub.
 
-**February 2020:** The initialisation files now _do not_ auto-delete. They will remain in your project. You can safely ignore them. They just make sure that your workspace is configured correctly each time you open it. It will also prevent the Gitpod configuration popup from appearing.
+### GitHub: GitHub is used to store the projects code after being pushed from Git.
 
-**December 2019:** Added Eventyret's Bootstrap 4 extension. Type `!bscdn` in a HTML file to add the Bootstrap boilerplate. Check out the <a href="https://github.com/Eventyret/vscode-bcdn" target="_blank">README.md file at the official repo</a> for more options.
+### CI Python Linter: was used to validate the Python code in this project
+### Heroku: Heroku was used for the deployed application.
 
-------
+### DrawSQLapp: Development of database schema.
 
-## FAQ about the uptime script
+## Testing
 
-**Why have you added this script?**
+### _A. Python Testing_
 
-It will help us to calculate how many running workspaces there are at any one time, which greatly helps us with cost and capacity planning. It will help us decide on the future direction of our cloud-based IDE strategy.
+[CI Python Linter](https://pep8ci.herokuapp.com/) was used to validate the Python code in this project. All code passed without errors, except some files which showed `E501 'line too long'` warnings.
 
-**How will this affect me?**
+![Settings.py](docs/images/error.PNG)
 
-For everyday usage of Gitpod, it doesn’t have any effect at all. The script only captures the following data:
 
-- An ID that is randomly generated each time the workspace is started.
-- The current date and time
-- The workspace status of “started” or “running”, which is sent every 5 minutes.
+- `posts/admin.py`: no errors found
+- `posts/models.py`: no errors found
+- `posts/tests.py`: no errors found
+- `posts/serializers.py`: no errors found
+- `posts/urls.py`: no errors found
+- `posts/views.py`: no errors found
 
-It is not possible for us or anyone else to trace the random ID back to an individual, and no personal data is being captured. It will not slow down the workspace or affect your work.
+- `profiles/admin.py`: no errors found
+- `profiles/models.py`: no errors found
+- `profiles/serializers.py`: no errors found
+- `profiles/urls.py`: no errors found
+- `profiles/views.py`: no errors found
 
-**So….?**
+- `notifications/admin.py`: no errors found
+- `notifications/models.py`: no errors found
+- `notifications/serializers.py`: no errors found
+- `notifications/urls.py`: no errors found
+- `notifications/views.py`:no errors found
 
-We want to tell you this so that we are being completely transparent about the data we collect and what we do with it.
+- `profiles/admin.py`: no errors found
+- `profiles/models.py`: no errors found
+- `profiles/serializers.py`: no errors found
+- `profiles/urls.py`: no errors found
+- `profiles/views.py`: no errors found  
 
-**Can I opt out?**
+- `likes/serializers.py`: no errors found
+- `likes/models.py`: no errors found
+- `likes/urls.py`: no errors found  
+- `likes/views.py`: no errors found
+- `likes/serializers.py`: no errors found
 
-Yes, you can. Since no personally identifiable information is being captured, we'd appreciate it if you let the script run; however if you are unhappy with the idea, simply run the following commands from the terminal window after creating the workspace, and this will remove the uptime script:
+- `followers/admin.py`: no errors found
+- `followers/models.py`: no errors found
+- `tribes/serializers.py`: no errors found
+- `followers/urls.py`: no errors found
+- `followers/views.py`: no errors found
 
-```
-pkill uptime.sh
-rm .vscode/uptime.sh
-```
+- `comments/admin.py`: no errors found
+- `comments/models.py`: no errors found
+- `comments/serializers.py`: no errors found
+- `comments/urls.py`: no errors found
+- `comments/views.py`: no errors found
 
-**Anything more?**
+- `afghnistan_api/admin.py`: no errors found
+- `afghnistan_api/permission.py`: no errors found
+- `afghnistan_api/serializers.py`: no errors found
+- `afghnistan_api/setting.py`: no errors found
+- `afghnistan_api/urls.py`: no errors found
+- `afghnistan_api/views.py`: no errors found
 
-Yes! We'd strongly encourage you to look at the source code of the `uptime.sh` file so that you know what it's doing. As future software developers, it will be great practice to see how these shell scripts work.
 
----
+### _C. Manual Testing_
 
-Happy coding!
+Throughout the development process, manual testing got CRUD testing was done to make sure the database was being updated as intended whether adding, reading, updating, or removing data as needed. All apps function properly.
+
+**Prfiles App**
+
+* List View: Accessible for reading if logged in.
+* List View: Accessible for reading if not logged in.
+* Detail View: Allows reading and updating if the user is the owner.
+* Detail View: Allows reading if the user is not the owner.
+* Detail View: Allows reading if not logged in.
+
+**Followers App**
+* List View: Allows reading and creating if logged in.
+* List View: Accessible for reading if not logged in.
+* Detail View: Allows reading and deleting if the user is the owner.
+* Detail View: Allows reading if the user is not the owner.
+* Detail View: Allows reading if not logged in.
+
+**Posts App**
+* List View (Read, Create if logged in)
+* List View (Read if not logged in)
+* Detail View (Read, Update, Delete if owner)
+* Detail View (Read if not owner)
+* Detail View (Read if not logged in)
+
+**Likes App**
+* List View (Read, Create if logged in)
+* List View (Read if not logged in)
+* Detail View (Read, Delete if owner)
+* Detail View (Read if not owner)
+* Detail View (Read if not logged in)
+
+**Comments App**
+* List View (Read, Create if logged in)
+* List View (Read if not logged in)
+* Detail View (Read, Update, Delete if owner)
+* Detail View (Read if not owner)
+* Detail View (Read if not logged in)
+
+**Notifications**
+* List View: Displays notifications for the logged-in user.
+* Detail View: Allows reading and deleting notifications if the user is the owner.
+
+## Bugs
+### _A. Solved Bugs_
+
+ 1. While creating to add **Video** When I upload image or video in my app it uploaded successfully in cloudianry but does not shows in preview,it displayed 2 urls.
+ ![Time Field bug code](docs/images/solvedbug.PNG)
+  ![Time Field bug code](docs/images/solved2bug.PNG)
+
+ I  use this package:
+https://pypi.org/project/django-cloudinary-storage/
+
+
+
+
+### _B. Unfixed Bugs_
+So far none
+
+## Deployment
+
+- Log in to Heroku.
+- Select 'Create new app' from the 'New' menu at the top right.
+- Enter a name for the app and select the appropriate region.
+- Select 'Create app'.
+- Select the 'settings' tab.
+- Locate the 'reveal config vars' link and select.
+- Enter the following config var names and values:
+    - `CLOUDINARY_URL`: *your cloudinary URL as obtained above*
+    - `DATABASE_URL`: *your ElephantSQL postgres database URL as obtained above*
+    - `SECRET_KEY`: *your secret key*
+    - `ALLOWED_HOST`: *the url of your Heroku app (but without the `https://` prefix)*
+- Select the 'Deploy' tab at the top.
+- Select 'GitHub' from the deployment options and confirm you wish to deploy using GitHub.
+- Find the 'Connect to GitHub' section and use the search box to locate your repo.
+- Select 'Connect' when found.
+- Optionally choose the main branch under 'Automatic Deploys' and select 'Enable Automatic Deploys' if you wish your deployed API to be automatically redeployed every time you push changes to GitHub.
+- Find the 'Manual Deploy' section, choose 'main' as the branch to deploy and select 'Deploy Branch'.
+- Your API will shortly be deployed and you will be given a link to the deployed site when the process is complete.
+
+## Credits
+
+* The Code Institute DRF-API walkthrough was used as an invaluable guide on how to build a DRF-API.
+* Out ***Tutor Support*** team, Thomas and Oisin, they were always there for me. they assisted me and inspired me with their constant assistance. 
+* Stack Overflow: When I faced an issue with my app, the first thing I did was search StackOverflow to try and find a solution to the problem.
+- [Django documentation](https://www.djangoproject.com)
+- [Django Rest Framework documentation](https://www.django-rest-framework.org)

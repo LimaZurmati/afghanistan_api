@@ -5,15 +5,16 @@ from .serializers import LikeSerializer
 
 
 class LikeList(generics.ListCreateAPIView):
-    """ List  likes or Create a like if  logged in."""
-
+    """List likes or create a like if logged in."""
+    
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
-    
-    # use generics in-built perform_create method
+
+    # Use generics in-built perform_create method
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
 
 class LikeDetail(generics.RetrieveDestroyAPIView):
     """

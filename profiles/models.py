@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     """
-    Profile model, related to User
+    Profile model, related to User.
     """
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=True)
@@ -15,7 +15,7 @@ class Profile(models.Model):
     github = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
     image = models.ImageField(
-    upload_to='images/', default='../default_profile_te45n4'
+        upload_to='images/', default='../default_profile_te45n4'
     )
 
     class Meta:
@@ -24,13 +24,11 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.owner}'s profile"
 
+
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(owner=instance)
 
 
-"""Creates a profile whenever a new user is created"""
+# Creates a profile whenever a new user is created
 post_save.connect(create_profile, sender=User)
-
-
-
