@@ -32,9 +32,9 @@ class Post(models.Model):
         storage=VideoMediaCloudinaryStorage(),
         null=True,
         blank=True
-    )  # New video field
+    )
     image_filter = models.CharField(max_length=32, choices=image_filter_choices, default='normal')
-    is_public = models.BooleanField(default=True)  # Default to public
+    is_public = models.BooleanField(default=True) \
 
     class Meta:
         ordering = ['-created_at']

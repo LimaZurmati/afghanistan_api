@@ -61,7 +61,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = 'DEV' in os.environ
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',os.environ.get('ALLOWED_HOST'), 'afghanistan-api-ba73e497f12e.herokuapp.com']
 
@@ -72,7 +72,7 @@ CSRF_TRUSTED_ORIGINS = [
 ] 
 
 # Application definition
-
+ndhwbdj
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
