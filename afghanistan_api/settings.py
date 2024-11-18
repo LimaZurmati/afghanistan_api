@@ -72,7 +72,7 @@ CSRF_TRUSTED_ORIGINS = [
 ] 
 
 # Application definition
-ndhwbdj
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
