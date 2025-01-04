@@ -70,10 +70,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',
     'http://localhost:8000',
 ] 
-CORS_ALLOWED_ORIGINS = [
-    'https://8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',
-    'http://localhost:8000',
-]
 
 # Application definition
 
@@ -123,8 +119,8 @@ if 'CLIENT_ORIGIN' in os.environ:
      CORS_ALLOWED_ORIGINS = [
          os.environ.get('CLIENT_ORIGIN')
      ]
-if 'CLIENT_ORIGIN_DEV' in os.environ:
-    CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\.codeinstitute-ide\.net$",]
+# if 'CLIENT_ORIGIN_DEV' in os.environ:
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\.codeinstitute-ide\.net$",]
 CORS_ALLOW_CREDENTIALS = True     
 
 ROOT_URLCONF = 'afghanistan_api.urls'
