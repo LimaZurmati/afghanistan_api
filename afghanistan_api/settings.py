@@ -63,7 +63,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # DEBUG = 'DEV' in os.environ
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',os.environ.get('ALLOWED_HOST'), 'afghanistan-api-ba73e497f12e.herokuapp.com']
+ALLOWED_HOSTS = ['localhost','8000-limazurmati-afghanistan-y9u7bktt9hi.ws.codeinstitute-ide.net',os.environ.get('ALLOWED_HOST'), 'afghanistan-aed69117b285.herokuapp.com']
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
