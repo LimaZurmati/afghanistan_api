@@ -47,13 +47,10 @@ The following Entity Relationship Diagram illustrates the models utilized in the
 2. Posts (for publishing text-based content)
 3. Comments (to allow users to comment on posts and engage with the community)
 4. Likes (to indicate interest in content)
-5.Notifications (to alert users about relevant activities and interactions)
-
-      Note: I was planning to include a notification feature in my app that would allow users to post notifications or receive updates. I created a data model for this, but unfortunately, due to unforeseen issues, I wasn't able to implement this feature. Further clarification can be found at the end of the document.
 
 ### _Database Schema_
 The relationships between all of these models is summarized in the followed entity relationship diagram:
-![Database Schema](docs/images/db_schema.jpg)
+![Database Schema](docs/images/db.PNG)
 
 
 
@@ -83,10 +80,7 @@ The relationships between all of these models is summarized in the followed enti
 | **Likes Endpoints**          |                                                                                                                                   |                  |                   |                |                                                                                                                               |
 | /posts/{post_id}/likes       | Lists all likes for a specific post.                                                                                             | GET              | Read              | List           | N/A                                                                                                                           |
 | /posts/{post_id}/likes       | Allows the authenticated user to like a specific post.                                                                           | POST             | Create            | List           | N/A                                                                                                                           |
-| /posts/{post_id}/likes/{id}  | Allows the authenticated user to unlike a specific post.                                                                         | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
-| **Notification Endpoints**    |                                                                                                                                   |                  |                   |                |                                                                                                                               |
-| /notifications                | Lists all notifications for the authenticated user.                                                                             | GET              | Read              | List           | N/A                                                                                                                           |
-| /notifications/{id}          | Deletes the specified notification. Only the owner of the notification can perform this action.                                   | DELETE           | Delete            | Detail         | N/A                                                                                                                           |
+| /posts/{post_id}/likes/{id}  | Allows the authenticated user to unlike a specific post.                                                                         | DELETE           | Delete            | Detail         | N/A                                                                                                                           
 
 
 ## Frameworks, libraries and dependencies
@@ -253,9 +247,6 @@ Throughout the development process, manual testing got CRUD testing was done to 
 * Detail View (Read if not owner)
 * Detail View (Read if not logged in)
 
-**Notifications**
-* List View: Displays notifications for the logged-in user.
-* Detail View: Allows reading and deleting notifications if the user is the owner.
 
 ## Bugs
 ### _A. Solved Bugs_
@@ -272,6 +263,14 @@ https://pypi.org/project/django-cloudinary-storage/
 
 ### _B. Unfixed Bugs_
 So far none
+
+#### Longer Term Future Features
+
+Lower priority, longer term features to be added are:
+
+- Notifications to inform users about activities such as comments on their posts and new followers.
+- User profile pages will display the post count and follower count, but will also allow users to click on these counts to navigate directly to the relevant pages.
+- Development of a messaging system to facilitate communication between users.
 
 ## Deployment
 
